@@ -39,6 +39,10 @@ export default {
       type: Boolean,
       default: false,
     },
+     disabled: {
+      type: Boolean,
+      default: true,
+    },
   },
   data() {
     return {
@@ -130,21 +134,31 @@ export default {
       }
     },
     onInput(event) {
-      this.$emit('input', event.target.value);
-      this.resizeTextarea();
+      if (!this.disabled) {
+        this.$emit('input', event.target.value);
+        this.resizeTextarea();
+      }
     },
     onKeyup() {
-      this.typingIndicator.start();
+      if (!this.disabled) {
+        this.typingIndicator.start();
+      }
     },
     onBlur() {
-      this.typingIndicator.stop();
-      this.$emit('blur');
+       if (!this.disabled) {
+        this.typingIndicator.stop();
+        this.$emit('blur');
+      }
     },
     onFocus() {
-      this.$emit('focus');
+      if (!this.disabled) {
+        this.$emit('focus');
+      }
     },
     focus() {
-      if (this.$refs.textarea) this.$refs.textarea.focus();
+      if (!this.disabled && this.$refs.textarea) {
+        this.$refs.textarea.focus();
+      }
     },
   },
 };
@@ -156,9 +170,18 @@ export default {
     :placeholder="placeholder"
     :rows="rows"
     :value="value"
+    :disabled="disabled"
+    :class="{ 'textarea-disabled': disabled }"
     @input="onInput"
     @focus="onFocus"
     @keyup="onKeyup"
     @blur="onBlur"
   />
 </template>
+
+<style scoped>
+.textarea-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+</style>

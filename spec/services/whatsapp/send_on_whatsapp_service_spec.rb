@@ -6,6 +6,9 @@ describe Whatsapp::SendOnWhatsappService do
     namespace: '23423423_2342423_324234234_2343224',
     language: 'en_US',
     category: 'Marketing',
+    header: {
+      format: 'text',
+    },
     processed_params: { '1' => '3' }
   }
 

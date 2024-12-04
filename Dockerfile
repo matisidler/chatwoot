@@ -4,21 +4,21 @@ FROM ruby:3.3.3-alpine3.19 AS pre-builder
 # ARG default to production settings
 # For development docker-compose file overrides ARGS
 ARG BUNDLE_WITHOUT="development:test"
-ENV BUNDLE_WITHOUT=${BUNDLE_WITHOUT}
+ENV BUNDLE_WITHOUT ${BUNDLE_WITHOUT}
 ENV BUNDLER_VERSION=2.1.2
 
 ARG RAILS_SERVE_STATIC_FILES=true
-ENV RAILS_SERVE_STATIC_FILES=${RAILS_SERVE_STATIC_FILES}
+ENV RAILS_SERVE_STATIC_FILES ${RAILS_SERVE_STATIC_FILES}
 
 ARG RAILS_ENV=production
-ENV RAILS_ENV=${RAILS_ENV}
+ENV RAILS_ENV ${RAILS_ENV}
 
 ARG NODE_OPTIONS="--openssl-legacy-provider"
-ENV NODE_OPTIONS=${NODE_OPTIONS}
+ENV NODE_OPTIONS ${NODE_OPTIONS}
 
 ENV BUNDLE_PATH="/gems"
 
-RUN apk update && apk add --no-cache \
+RUN apk update && apk add \
   openssl \
   tar \
   build-base \
@@ -39,19 +39,17 @@ COPY Gemfile Gemfile.lock ./
 # https://github.com/googleapis/google-cloud-ruby/issues/13306
 # adding xz as nokogiri was failing to build libxml
 # https://github.com/chatwoot/chatwoot/issues/4045
-RUN apk update && apk add --no-cache build-base musl ruby-full ruby-dev gcc make musl-dev openssl openssl-dev g++ linux-headers xz vips \
-  && bundle config set --local force_ruby_platform true
+RUN apk update && apk add build-base musl ruby-full ruby-dev gcc make musl-dev openssl openssl-dev g++ linux-headers xz vips
+RUN bundle config set --local force_ruby_platform true
 
 # Do not install development or test gems in production
 RUN if [ "$RAILS_ENV" = "production" ]; then \
-  bundle config set without 'development test'; \
-  bundle install -j 4 -r 3; \
-  else \
-  bundle install -j 4 -r 3; \
+  bundle config set without 'development test'; bundle install -j 4 -r 3; \
+  else bundle install -j 4 -r 3; \
   fi
 
 COPY package.json yarn.lock ./
-RUN yarn install --network-concurrency 1 --network-timeout 600000
+RUN yarn install
 
 COPY . /app
 
@@ -65,11 +63,6 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   && rm -rf spec node_modules tmp/cache; \
   fi
 
-
-# Remove build dependencies
-RUN apk del --no-cache build-base musl ruby-dev gcc musl-dev openssl-dev g++ linux-headers xz \
-  && rm -rf /var/cache/apk/*
-
 # Remove unnecessary files
 RUN rm -rf /gems/ruby/3.3.0/cache/*.gem \
   && find /gems/ruby/3.3.0/gems/ \( -name "*.c" -o -name "*.o" \) -delete \
@@ -81,23 +74,23 @@ FROM ruby:3.3.3-alpine3.19
 
 
 ARG BUNDLE_WITHOUT="development:test"
-ENV BUNDLE_WITHOUT=${BUNDLE_WITHOUT}
+ENV BUNDLE_WITHOUT ${BUNDLE_WITHOUT}
 ENV BUNDLER_VERSION=2.1.2
 
 ARG EXECJS_RUNTIME="Disabled"
-ENV EXECJS_RUNTIME=${EXECJS_RUNTIME}
+ENV EXECJS_RUNTIME ${EXECJS_RUNTIME}
 
 ARG RAILS_SERVE_STATIC_FILES=true
-ENV RAILS_SERVE_STATIC_FILES=${RAILS_SERVE_STATIC_FILES}
+ENV RAILS_SERVE_STATIC_FILES ${RAILS_SERVE_STATIC_FILES}
 
 ARG BUNDLE_FORCE_RUBY_PLATFORM=1
-ENV BUNDLE_FORCE_RUBY_PLATFORM=${BUNDLE_FORCE_RUBY_PLATFORM}
+ENV BUNDLE_FORCE_RUBY_PLATFORM ${BUNDLE_FORCE_RUBY_PLATFORM}
 
 ARG RAILS_ENV=production
-ENV RAILS_ENV=${RAILS_ENV}
+ENV RAILS_ENV ${RAILS_ENV}
 ENV BUNDLE_PATH="/gems"
 
-RUN apk update && apk add --no-cache \
+RUN apk update && apk add \
   build-base \
   openssl \
   tzdata \
@@ -108,7 +101,7 @@ RUN apk update && apk add --no-cache \
   && gem install bundler
 
 RUN if [ "$RAILS_ENV" != "production" ]; then \
-  apk add --no-cache nodejs-current yarn; \
+  apk add nodejs-current yarn; \
   fi
 
 COPY --from=pre-builder /gems/ /gems/
@@ -116,7 +109,12 @@ COPY --from=pre-builder /app /app
 
 WORKDIR /app
 
-# permisos para rails
-RUN chmod -R 777 ./docker
+RUN apk add multirun postgresql-client
 
 EXPOSE 3000
+
+COPY --chmod=755 start.sh ./
+
+ENTRYPOINT ["/bin/sh"]
+
+CMD ["start.sh"]

@@ -50,6 +50,7 @@ class Channel::Whatsapp < ApplicationRecord
 
   def messaging_window_enabled?
     provider_config['url'] == 'https://graph.facebook.com'
+    return true
   end
 
   def mark_message_templates_updated

@@ -85,6 +85,7 @@ export default {
           language: props.template.language,
           namespace: props.template.namespace,
           processed_params: processedParams.value,
+          header: props.template.header,
         },
       };
       emit('sendMessage', payload);

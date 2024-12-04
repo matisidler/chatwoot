@@ -116,6 +116,9 @@ describe('#actions', () => {
                 category: 'MARKETING',
                 language: 'en_US',
                 processed_params: {},
+                header: {
+                  format: 'text',
+                },
               },
             },
             contactId: 4,

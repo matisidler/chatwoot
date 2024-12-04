@@ -18,11 +18,11 @@
       "BACK": "Back"
     },
     "TYPES": {
-      "CONVERSATION_MENTION": "You have been mentioned in a conversation",
-      "CONVERSATION_CREATION": "New conversation created",
-      "CONVERSATION_ASSIGNMENT": "A conversation has been assigned to you",
-      "ASSIGNED_CONVERSATION_NEW_MESSAGE": "New message in an assigned conversation",
-      "PARTICIPATING_CONVERSATION_NEW_MESSAGE": "New message in a conversation you are participating in",
+     "CONVERSATION_MENTION": "Has sido mencionado en una conversación",
+      "CONVERSATION_CREATION": "Se ha creado una conversación",
+      "CONVERSATION_ASSIGNMENT": "Se te ha asignado una conversación",
+      "ASSIGNED_CONVERSATION_NEW_MESSAGE": "Se ha creado un nuevo mensaje en tu conversación asignada",
+      "PARTICIPATING_CONVERSATION_NEW_MESSAGE": "Se ha creado un nuevo mensaje en una conversación en la que participas",
       "SLA_MISSED_FIRST_RESPONSE": "SLA target first response missed for conversation",
       "SLA_MISSED_NEXT_RESPONSE": "SLA target next response missed for conversation",
       "SLA_MISSED_RESOLUTION": "SLA target resolution missed for conversation"

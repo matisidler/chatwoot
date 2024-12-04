@@ -380,6 +380,9 @@ export default {
       const { slug = '' } = portal;
       return slug;
     },
+     canReply() {
+      return this.currentChat.can_reply
+    },
   },
   watch: {
     currentChat(conversation) {
@@ -391,7 +394,7 @@ export default {
         return;
       }
 
-      if (canReply || this.isAWhatsAppChannel) {
+      if (canReply) {
         this.replyType = REPLY_EDITOR_MODES.REPLY;
       } else {
         this.replyType = REPLY_EDITOR_MODES.NOTE;
@@ -1143,6 +1146,7 @@ export default {
         :signature="signatureToApply"
         allow-signature
         :send-with-signature="sendWithSignature"
+        :disabled="!canReply"
         @typingOff="onTypingOff"
         @typingOn="onTypingOn"
         @focus="onFocus"

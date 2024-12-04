@@ -10,15 +10,17 @@ class Whatsapp::Providers::WhatsappCloudService < Whatsapp::Providers::BaseServi
   end
 
   def send_template(message, phone_number, template_info)
+    template_params = template_body_parameters(template_info)
+    body = {
+      messaging_product: 'whatsapp',
+      to: phone_number,
+      template: template_params,
+      type: 'template'
+    }
     response = HTTParty.post(
       "#{phone_id_path}/messages",
       headers: api_headers,
-      body: {
-        messaging_product: 'whatsapp',
-        to: phone_number,
-        template: template_body_parameters(template_info),
-        type: 'template'
-      }.to_json
+      body: body.to_json
     )
 
     process_response(message, response)
@@ -157,7 +159,7 @@ class Whatsapp::Providers::WhatsappCloudService < Whatsapp::Providers::BaseServi
   end
 
   def template_body_parameters(template_info)
-    {
+    params = {
       name: template_info[:name],
       language: {
         policy: 'deterministic',
@@ -168,6 +170,22 @@ class Whatsapp::Providers::WhatsappCloudService < Whatsapp::Providers::BaseServi
         parameters: template_info[:parameters]
       }]
     }
+    if template_info[:header].present?
+      header_format = template_info[:header]['format']&.downcase
+      header_link = template_info[:header]['link']
+      params[:components].unshift({
+        type: 'header',
+        parameters: [
+          {
+            type: header_format,
+            image: {
+              link: header_link
+            }
+          }
+        ]
+      })
+    end
+    params
   end
 
   def whatsapp_reply_context(message)

@@ -3134,6 +3134,13 @@
                           "description": "Language of the template",
                           "example": "en_US"
                         },
+                        "header": {
+                          "type": "object",
+                          "description": "The header of the template",
+                          "example": {
+                            "format": "text"
+                          }
+                        },
                         "processed_params": {
                           "type": "object",
                           "description": "The processed param values for template variables in template",

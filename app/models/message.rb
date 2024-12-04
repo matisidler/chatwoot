@@ -52,7 +52,13 @@ class Message < ApplicationRecord
           'category': { 'type': 'string' },
           'language': { 'type': 'string' },
           'namespace': { 'type': 'string' },
-          'processed_params': { 'type': 'object' }
+         'processed_params': { 'type': 'object' },
+          'header': {
+            'type': 'object',
+            'properties': {
+              'format': { 'type': 'string' }
+            }
+          }
         },
         'required': %w[name]
       }
