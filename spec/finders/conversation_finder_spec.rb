@@ -183,14 +183,13 @@ describe ConversationFinder do
     context 'with unattended' do
       let(:params) { { status: 'open', assignee_type: 'me', conversation_type: 'unattended' } }
 
-      it 'returns unattended conversations' do
-        create(:conversation, account: account, first_reply_created_at: Time.now.utc, assignee: user_1) # attended_conversation
-        create(:conversation, account: account, first_reply_created_at: nil, assignee: user_1) # unattended_conversation_no_first_reply
-        create(:conversation, account: account, first_reply_created_at: Time.now.utc,
-                              assignee: user_1, waiting_since: Time.now.utc) # unattended_conversation_waiting_since
+      it 'returns conversations with unread messages' do
+        conversation_with_unread = create(:conversation, account: account, assignee: user_1, unread_count: 2)
+        conversation_without_unread = create(:conversation, account: account, assignee: user_1, unread_count: 0)
 
         result = conversation_finder.perform
-        expect(result[:conversations].length).to be 2
+        expect(result[:conversations]).to include(conversation_with_unread)
+        expect(result[:conversations]).not_to include(conversation_without_unread)
       end
     end
   end

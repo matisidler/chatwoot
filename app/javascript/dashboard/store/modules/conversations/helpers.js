@@ -27,11 +27,10 @@ export const filterByLabel = (shouldFilter, labels, chatLabels) => {
 export const filterByUnattended = (
   shouldFilter,
   conversationType,
-  firstReplyOn,
-  waitingSince
+  unreadCount
 ) => {
   return conversationType === 'unattended'
-    ? (!firstReplyOn || !!waitingSince) && shouldFilter
+    ? unreadCount > 0 && shouldFilter
     : shouldFilter;
 };
 
@@ -55,8 +54,7 @@ export const applyPageFilters = (conversation, filters) => {
   shouldFilter = filterByUnattended(
     shouldFilter,
     conversationType,
-    firstReplyOn,
-    waitingSince
+    unreadCount
   );
 
   return shouldFilter;
