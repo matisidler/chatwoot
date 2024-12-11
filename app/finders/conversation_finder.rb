@@ -111,7 +111,10 @@ class ConversationFinder
     when 'participating'
       @conversations = current_user.participating_conversations.where(account_id: current_account.id)
     when 'unattended'
-      @conversations = @conversations.where('unread_count > ?', 0)
+      @conversations = @conversations.joins(:messages)
+                                   .where(messages: { message_type: :incoming })
+                                   .where('messages.created_at > conversations.agent_last_seen_at OR conversations.agent_last_seen_at IS NULL')
+                                   .distinct
     end
     @conversations
   end

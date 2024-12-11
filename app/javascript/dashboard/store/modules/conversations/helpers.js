@@ -29,9 +29,18 @@ export const filterByUnattended = (
   conversationType,
   unreadCount
 ) => {
-  return conversationType === 'unattended'
-    ? unreadCount > 0 && shouldFilter
-    : shouldFilter;
+  try {
+    console.log('Unread Count:', unreadCount);
+    const response = unreadCount > 0 ? shouldFilter : shouldFilter;
+    console.log('Response:', response);
+    return response;
+  } catch (error) {
+    console.error('Error in filterByUnattended:', error);
+    // Fallback to old behavior
+    return conversationType === 'unattended';
+    // ? (!firstReplyOn || !!waitingSince) && shouldFilter
+    // : shouldFilter;
+  }
 };
 
 export const applyPageFilters = (conversation, filters) => {
@@ -51,10 +60,14 @@ export const applyPageFilters = (conversation, filters) => {
   shouldFilter = filterByInbox(shouldFilter, inboxId, chatInboxId);
   shouldFilter = filterByTeam(shouldFilter, teamId, chatTeamId);
   shouldFilter = filterByLabel(shouldFilter, labels, chatLabels);
+  console.log('Chat Status:', status);
+  console.log('Conversation Type:', conversationType);
+  console.log('Meta:', meta);
+  console.log('Conversation:', conversation);
   shouldFilter = filterByUnattended(
     shouldFilter,
     conversationType,
-    unreadCount
+    conversation.unread_count
   );
 
   return shouldFilter;
