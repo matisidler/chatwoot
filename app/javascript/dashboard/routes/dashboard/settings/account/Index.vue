@@ -94,6 +94,10 @@ export default {
     getAccountId() {
       return this.id.toString();
     },
+
+    isWhatsAppLabel() {
+      return this.inboxNameLabel.startsWith('WhatsApp');
+    },
   },
   mounted() {
     this.initializeAccount();
@@ -180,6 +184,7 @@ export default {
               v-model="name"
               type="text"
               :placeholder="$t('GENERAL_SETTINGS.FORM.NAME.PLACEHOLDER')"
+              disabled
               @blur="v$.name.$touch"
             />
             <span v-if="v$.name.$error" class="message">

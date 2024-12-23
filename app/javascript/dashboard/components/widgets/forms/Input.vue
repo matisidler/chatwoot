@@ -29,9 +29,19 @@ export default {
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
     styles: {
       type: Object,
       default: () => {},
+    },
+  },
+  computed: {
+    shouldDisable() {
+      const stringValue = String(this.value);
+      return this.disabled || stringValue.startsWith('WhatsApp');
     },
   },
   methods: {
@@ -54,6 +64,7 @@ export default {
       :type="type"
       :placeholder="placeholder"
       :readonly="readonly"
+      :disabled="shouldDisable"
       :style="styles"
       @input="onChange"
       @blur="onBlur"
