@@ -16,7 +16,7 @@ ENV RAILS_ENV ${RAILS_ENV}
 ARG NODE_OPTIONS="--openssl-legacy-provider"
 ENV NODE_OPTIONS ${NODE_OPTIONS}
 
-ENV BUNDLE_PATH="/gems"
+ENV BUNDLE_PATH="/usr/local/bundle"
 
 RUN apk update && apk add \
   openssl \
@@ -44,8 +44,10 @@ RUN bundle config set --local force_ruby_platform true
 
 # Do not install development or test gems in production
 RUN if [ "$RAILS_ENV" = "production" ]; then \
-  bundle config set without 'development test'; bundle install -j 4 -r 3; \
-  else bundle install -j 4 -r 3; \
+  bundle config set without 'development test' \
+  && bundle install --jobs 4 --retry 3; \
+  else \
+  bundle install --jobs 4 --retry 3; \
   fi
 
 COPY package.json yarn.lock ./
@@ -88,7 +90,7 @@ ENV BUNDLE_FORCE_RUBY_PLATFORM ${BUNDLE_FORCE_RUBY_PLATFORM}
 
 ARG RAILS_ENV=production
 ENV RAILS_ENV ${RAILS_ENV}
-ENV BUNDLE_PATH="/gems"
+ENV BUNDLE_PATH="/usr/local/bundle"
 
 RUN apk update && apk add \
   build-base \
@@ -104,7 +106,7 @@ RUN if [ "$RAILS_ENV" != "production" ]; then \
   apk add nodejs-current yarn; \
   fi
 
-COPY --from=pre-builder /gems/ /gems/
+COPY --from=pre-builder /usr/local/bundle/ /usr/local/bundle/
 COPY --from=pre-builder /app /app
 
 WORKDIR /app
