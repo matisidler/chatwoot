@@ -67,8 +67,8 @@ RUN if [ "$RAILS_ENV" = "production" ]; then \
   fi
 
 # Remove unnecessary files
-RUN rm -rf /gems/ruby/3.3.0/cache/*.gem \
-  && find /gems/ruby/3.3.0/gems/ \( -name "*.c" -o -name "*.o" \) -delete \
+RUN rm -rf /usr/local/bundle/cache/*.gem \
+  && find /usr/local/bundle/gems/ \( -name "*.c" -o -name "*.o" \) -delete \
   && rm -rf .git \
   && rm .gitignore
 
